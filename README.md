@@ -1,24 +1,9 @@
-# README
 
-[![Scrutinizer Code Quality](https://scrutinizer-ci.com/g/owncloud/music/badges/quality-score.png?s=ddb9090619b6bcf0bf381e87011322dd2514c884)](https://scrutinizer-ci.com/g/owncloud/music/)
-
-<img src="/img/logo/music_logotype_horizontal.svg" alt="logotype" width="60%"/>
 
 ## Overview
 
 Music player and server for ownCloud and Nextcloud. Shows audio files stored in your cloud categorized by artists and albums. Supports mp3, and depending on the browser, many other audio formats too. Supports shuffle play and playlists. The Music app also allows serving audio files from your cloud to external applications which are compatible either with Ampache or Subsonic.
 
-The full-screen albums view:
-![library view](https://user-images.githubusercontent.com/8565946/132128608-34dc576b-07b7-424c-ae81-a63b9128f3d7.png)
-
-Music player embedded into the files view:
-![files view](https://user-images.githubusercontent.com/8565946/132128626-712bf745-691e-4f03-83d7-20cbc4dd37d1.png)
-
-Integration with the media control panel in Chrome:
-<img src="https://user-images.githubusercontent.com/16665512/96973502-4373e800-1518-11eb-9f99-9446d3dbf19a.jpg" alt="Chrome media control panel" width="60%"/>
-
-Mobile layout and media control integration to the lock screen and notification center with Chrome on Android:
-<img src="https://user-images.githubusercontent.com/16665512/96973698-89c94700-1518-11eb-8f9b-dc31ad529345.jpg" alt="Mobile layout" width="30%"/>    <img src="https://user-images.githubusercontent.com/8565946/79892141-bdf96900-840a-11ea-8ab7-b5afefa712d7.png" alt="Android lock screen" width="30%"/>    <img src="https://user-images.githubusercontent.com/8565946/79892145-bfc32c80-840a-11ea-88c3-0911d22b45cc.png" alt="Android notification center" width="30%"/>
 
 ## Supported formats
 
@@ -51,11 +36,7 @@ Normally, the Music app detects any new audio files in the filesystem on applica
 
 If the database would somehow get corrupted, the user can force it to be rebuilt from scratch by opening the Settings (at the bottom of the left pane) and clicking the option "Reset music collection".
 
-### Commands
 
-If preferred, it is also possible to use the command line tool for the database maintenance as described below. This may be quicker than scanning via the web UI in case of large music library, and optionally allows targeting more than one user at once.
-
-Following commands are available(see script occ in your ownCloud root folder):
 
 #### Scan music files
 
@@ -71,15 +52,7 @@ You can also supply the option `--rescan` to scan also the files which are alrea
 
 Lastly, you can give option `--clean-obsolete` to make the process check all the previously scanned files, and clean up those which are no longer found. Again, this is usually handled automatically, but manually running the command could be necessary on some special cases.
 
-#### Reset scanned metadata
 
-Reset all data stored to the music database. Target either specified user(s) or user group(s) or all users.
-
-**Warning:** This command will erase user-created data! It will remove all playlists as playlists are linked against the track metadata.
-
-	./occ music:reset-database USERNAME1 USERNAME2 ...
-	./occ music:reset-database --group=USERGROUP1 --group==USERGROUP2 ...
-	./occ music:reset-database --all
 
 #### Reset cache
 
@@ -89,21 +62,7 @@ Music app caches some results for performance reasons. Normally, there should be
 	./occ music:reset-cache --group=USERGROUP1 --group==USERGROUP2 ...
 	./occ music:reset-cache --all
 
-### Ampache and Subsonic
 
-The URL you need to connect with an Ampache-compatible player is listed in the settings and looks like this:
-
-```
-https://cloud.domain.org/index.php/apps/music/ampache
-```
-
-This is the common path. Most clients append the last part (`/server/xml.server.php`) automatically. If you have connection problems, try the longer version of the URL with the `/server/xml.server.php` appended.
-
-Similarly, the URL used to connect with a Subsonic-compatible player is listed in the settings and looks like this:
-
-```
-https://cloud.domain.org/index.php/apps/music/subsonic
-```
 
 
 #### Authentication
@@ -152,84 +111,6 @@ To automatically regenerate the development mode bundles whenever the source .js
 
 	npm run watch
 
-### Build delivery package
-
-To build the release zip package, run the following commands. This requires the `make` and `zip` command line utilities.
-
-	cd build
-	make release
-
-### Install test dependencies
-
-To install test dependencies, run the following command on the root level of the project:
-
-	composer install
-
-### Run tests
-
-#### Static analysis with PHPStan
-
-	composer run-script analyze
-
-#### PHP unit tests
-
-	composer run-script unit-tests
-
-#### PHP integration tests
-The integration tests require the music app to be installed under the `apps` folder of an ownCloud or Nextcloud installation. The following steps assume that the cloud installation in question has not been taken into use yet, e.g. it's a fresh clone from github.
-
-	cd ../..          # owncloud/nextcloud core
-	./occ maintenance:install --admin-user admin --admin-pass admin --database sqlite
-	./occ app:enable music
-	cd apps/music
-	composer run-script integration-tests
-
-#### Behat acceptance tests
-
-	cd tests
-	cp behat.yml.dist behat.yml
-	# add cloud URL and credentials for Ampache and Subsonic APIs to behat.yml
-	../vendor/bin/behat
-
-For the acceptance tests, you need to upload all the tracks from the following zip file to your cloud instance: https://github.com/paulijar/music/files/2364060/testcontent.zip
-
-## API
-
-The Music app back-end implements the [Shiva API](https://shiva.readthedocs.org/en/latest/resources/base.html) except the resources `/artists/<int:artist_id>/shows`, `/tracks/<int:track_id>/lyrics` and the meta resources. You can use this API under `https://own.cloud.example.org/index.php/apps/music/api/`.
-
-However, the front-end of the Music app nowadays doesn't use any part of the Shiva API. Instead, the following proprietary REST endpoints are used:
-
-* `/api/log`
-* `/api/prepare_collection`
-* `/api/collection`
-* `/api/folders`
-* `/api/genres`
-* `/api/file/{fileId}`
-* `/api/file/{fileId}/download`
-* `/api/file/{fileId}/path`
-* `/api/file/{fileId}/info`
-* `/api/file/{fileId}/details`
-* `/api/scanstate`
-* `/api/scan`
-* `/api/resetscanned`
-* `/api/cover/{hash}`
-* `/api/artist/{artistId}/cover`
-* `/api/artist/{artistId}/details`
-* `/api/artist/{artistId}/similar`
-* `/api/album/{albumId}/cover`
-* `/api/album/{albumId}/details`
-* `/api/share/{token}/{fileId}/info`
-* `/api/share/{token}/{fileId}/parse`
-* Playlist API at `/api/playlists/*`
-* Radio API at `/api/radio/*`
-* Podcast API at `/api/podcasts/*`
-* Settings API at `/api/settings/*`
-
-To connect external client applications, partial implementations of the following APIs are available:
-
-* [Ampache XML API](https://github.com/ampache/ampache/wiki/XML-methods) at `/ampache/server/xml.server.php`
-* [Ampache JSON API](https://github.com/ampache/ampache/wiki/JSON-methods) at `/ampache/server/json.server.php`
-* [Subsonic API](http://www.subsonic.org/pages/api.jsp) at `/subsonic/rest/{method}`
 
 ### `/api/log`
 
